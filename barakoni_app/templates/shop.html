@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Shop</h1>
+<p>You have {{ points }} points.</p>
+<div class="shop-items">
+    {% for item in items %}
+    <div class="shop-item">
+        <h3>{{ item.name }}</h3>
+        <p>Cost: {{ item.cost }} points</p>
+        {% if item.owned %}
+            <p style="color: green; font-weight: bold;">Owned</p>
+            <form method="post" action="{{ url_for('equip_item') }}">
+                <input type="hidden" name="item_name" value="{{ item.name }}">
+                <button type="submit" class="action-btn">Toggle Equip</button>
+            </form>
+        {% else %}
+            <form method="post">
+                <input type="hidden" name="item_name" value="{{ item.name }}">
+                <button type="submit" class="action-btn">Buy</button>
+            </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

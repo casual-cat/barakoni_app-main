@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Meet Barakoni!</h1>
+<p>You have {{ points }} points.</p>
+
+<div class="barakoni-container">
+    <img src="{{ url_for('static', filename='img/' ~ image_filename) }}" alt="Barakoni" class="barakoni-img">
+</div>
+
+<div class="stats-container">
+    <div class="stat">
+        <span>Hunger</span>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ barakoni.hunger }}%;"></div>
+        </div>
+    </div>
+    <div class="stat">
+        <span>Happiness</span>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ barakoni.happiness }}%;"></div>
+        </div>
+    </div>
+    <div class="stat">
+        <span>Energy</span>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ barakoni.energy }}%;"></div>
+        </div>
+    </div>
+    <div class="stat">
+        <span>Evolution Stage</span>
+        <div class="evolution-stage">{{ barakoni.evolution_stage }}</div>
+    </div>
+</div>
+
+<div class="actions">
+    <h2>Positive Interactions</h2>
+    <form action="{{ url_for('feed') }}" method="post">
+        <button type="submit" class="action-btn feed-btn">Feed Barakoni</button>
+    </form>
+    <form action="{{ url_for('play') }}" method="post">
+        <button type="submit" class="action-btn play-btn">Play with Barakoni</button>
+    </form>
+    <form action="{{ url_for('rest') }}" method="post">
+        <button type="submit" class="action-btn rest-btn">Let Barakoni Rest</button>
+    </form>
+</div>
+
+<div class="actions negative-actions">
+    <h2>Mischief</h2>
+    <form action="{{ url_for('tease') }}" method="post">
+        <button type="submit" class="action-btn negative-btn tease-btn">Tease Barakoni</button>
+    </form>
+    <form action="{{ url_for('annoy') }}" method="post">
+        <button type="submit" class="action-btn negative-btn annoy-btn">Annoy Barakoni</button>
+    </form>
+</div>
+{% endblock %}

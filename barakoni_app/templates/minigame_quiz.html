@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>DevOps Quiz</h1>
+<p>You have {{ points }} points.</p>
+<div class="game-container">
+    <p>{{ question }}</p>
+    <form method="post">
+        {% for opt in options %}
+        <label class="quiz-option">
+            <input type="radio" name="answer" value="{{ opt }}" required>
+            {{ opt }}
+        </label><br>
+        {% endfor %}
+        <button type="submit" class="action-btn">Submit Answer</button>
+    </form>
+</div>
+{% endblock %}

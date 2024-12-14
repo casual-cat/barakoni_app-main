@@ -1,24 +1,24 @@
 from db import db
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
-
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
 
 class BarakoniState(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     hunger = db.Column(db.Integer, default=50)
     happiness = db.Column(db.Integer, default=50)
     energy = db.Column(db.Integer, default=50)
     evolution_stage = db.Column(db.Integer, default=1)
+    happy_streak = db.Column(db.Integer, default=0)
+    unhappy_streak = db.Column(db.Integer, default=0)
+    has_hat = db.Column(db.Boolean, default=False)
+    has_glasses = db.Column(db.Boolean, default=False)
+    has_wig = db.Column(db.Boolean, default=False)
 
-    user = db.relationship('User', backref='barakoni_state', uselist=False)
+class GlobalState(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    points = db.Column(db.Integer, default=0)
+    # Removed last_visit since no daily logs
+
+class Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    cost = db.Column(db.Integer)
+    owned = db.Column(db.Boolean, default=False)

@@ -3,10 +3,10 @@
 <h1>Number Guessing Game</h1>
 <p>You have {{ points }} points.</p>
 <div class="game-container">
-    <p>Guess a number between 1 and 5!</p>
+    <p class="game-instruction">Guess a number between 1 and 5!</p>
     <form method="post">
         <input type="number" name="guess" min="1" max="5" required class="game-input">
-        <button type="submit" class="action-btn">Submit Guess</button>
+        <button type="submit" class="action-btn game-btn">Submit Guess</button>
     </form>
 </div>
 {% endblock %}

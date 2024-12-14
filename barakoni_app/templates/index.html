@@ -4,7 +4,8 @@
 <p>You have {{ points }} points.</p>
 
 <div class="barakoni-container">
-    <img src="{{ url_for('static', filename='img/' ~ image_filename) }}" alt="Barakoni" class="barakoni-img">
+    <!-- Clicking the image will send an AJAX request to /tease -->
+    <img src="{{ url_for('static', filename='img/' ~ image_filename) }}" alt="Barakoni" class="barakoni-img" id="barakoni-img">
 </div>
 
 <div class="stats-container">
@@ -47,11 +48,25 @@
 
 <div class="actions negative-actions">
     <h2>Mischief</h2>
-    <form action="{{ url_for('tease') }}" method="post">
-        <button type="submit" class="action-btn negative-btn tease-btn">Tease Barakoni</button>
-    </form>
     <form action="{{ url_for('annoy') }}" method="post">
         <button type="submit" class="action-btn negative-btn annoy-btn">Annoy Barakoni</button>
     </form>
 </div>
+
+<script>
+document.getElementById('barakoni-img').addEventListener('click', function() {
+    fetch('{{ url_for("tease") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({})
+    }).then(response => response.json())
+    .then(data => {
+        // After teasing, reload page to see updated stats
+        window.location.reload();
+    });
+});
+</script>
 {% endblock %}

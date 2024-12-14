@@ -22,6 +22,11 @@ body.autumn.day { filter: hue-rotate(-30deg); }
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 0 10px #00000020;
+    transition: all 0.3s ease;
+}
+
+.container:hover {
+    transform: scale(1.01);
 }
 
 nav a {
@@ -56,6 +61,7 @@ nav a {
 .barakoni-container {
     text-align: center;
     margin-bottom: 20px;
+    cursor: pointer;
 }
 
 @keyframes float {
@@ -66,6 +72,10 @@ nav a {
 .barakoni-img {
     max-width: 150px;
     animation: float 3s ease-in-out infinite;
+    transition: transform 0.2s;
+}
+.barakoni-img:hover {
+    transform: scale(1.05);
 }
 
 /* Stats */
@@ -112,21 +122,24 @@ nav a {
     background: #9b5de5;
     transition: transform 0.2s ease, background 0.3s ease;
 }
-.action-btn:hover { transform: translateY(-2px); }
+.action-btn:hover { transform: translateY(-2px); background: #f15bb5; }
 .action-btn:active { transform: translateY(1px); }
 
-/* Negative actions */
-.negative-actions h2 {
-    margin-top: 30px;
-    color: #ff5c5c;
-    text-shadow: 1px 1px #fff;
-}
+.feed-btn { background: #00bbf9; }
+.feed-btn:hover { background: #00f5d4; }
+
+.play-btn { background: #fee440; color: #333; }
+.play-btn:hover { background: #fcbf49; color:#000; }
+
+.rest-btn { background: #9b5de5; }
+
 .negative-btn { background: #ff5c5c; color: #fff; }
 .negative-btn:hover {
     background: #ff4b4b;
     animation: shake 0.2s linear;
     animation-iteration-count: 1;
 }
+
 @keyframes shake {
     0% { transform: translateX(0); }
     25% { transform: translateX(-3px); }
@@ -135,19 +148,33 @@ nav a {
     100% { transform: translateX(0); }
 }
 
-/* Game container for minigames */
+/* Game container */
 .game-container {
     background: #f4f4f4;
     padding: 20px;
     border-radius: 5px;
     text-align: center;
     box-shadow: 0 0 5px #00000020;
+    transition: all 0.2s ease-in-out;
+}
+.game-container:hover {
+    transform: scale(1.02);
+}
+.game-instruction {
+    font-size: 1.1em;
+    margin-bottom: 10px;
 }
 .game-input {
     padding: 5px;
     margin: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
+}
+.game-btn {
+    background: #9b5de5;
+}
+.game-btn:hover {
+    background: #f15bb5;
 }
 
 /* Quiz options */
@@ -170,4 +197,12 @@ nav a {
     text-align: center;
     width: 150px;
     box-shadow: 0 0 5px #00000020;
+    transition: all 0.2s ease-in-out;
 }
+.shop-item:hover {
+    transform: scale(1.05);
+}
+.buy-btn { background: #00bbf9; }
+.buy-btn:hover { background: #00f5d4; }
+.equip-btn { background: #ffa1a1; }
+.equip-btn:hover { background: #ffbdbd; }

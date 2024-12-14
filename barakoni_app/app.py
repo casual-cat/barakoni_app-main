@@ -1,6 +1,6 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, session
+from flask import Flask, render_template, redirect, url_for, flash, request, session, jsonify
 from db import db
-from models import BarakoniState, GlobalState, Item  # Removed DailyLog, Achievement from imports
+from models import BarakoniState, GlobalState, Item
 from datetime import datetime
 import random
 
@@ -23,32 +23,22 @@ with app.app_context():
         global_state = GlobalState(points=100)
         db.session.add(global_state)
 
-    # Ensure items exist
-    hat = Item.query.filter_by(name='Fancy Hat').first()
-    if not hat:
-        hat = Item(name='Fancy Hat', cost=50, owned=False)
-        db.session.add(hat)
-
-    glasses = Item.query.filter_by(name='Glasses').first()
-    if not glasses:
-        glasses = Item(name='Glasses', cost=40, owned=False)
-        db.session.add(glasses)
-
-    wig = Item.query.filter_by(name='Wig').first()
-    if not wig:
-        wig = Item(name='Wig', cost=60, owned=False)
-        db.session.add(wig)
+    # Ensure items
+    if not Item.query.filter_by(name='Fancy Hat').first():
+        db.session.add(Item(name='Fancy Hat', cost=50, owned=False))
+    if not Item.query.filter_by(name='Glasses').first():
+        db.session.add(Item(name='Glasses', cost=40, owned=False))
+    if not Item.query.filter_by(name='Wig').first():
+        db.session.add(Item(name='Wig', cost=60, owned=False))
 
     db.session.commit()
 
 @app.before_request
 def ensure_defaults():
-    # Ensure secret_number for minigame and quiz session vars exist
     if 'secret_number' not in session:
         session['secret_number'] = random.randint(1, 5)
     if 'devops_quiz_wins' not in session:
         session['devops_quiz_wins'] = 0
-    # We'll store current quiz question index in session
     if 'quiz_question' not in session:
         session['quiz_question'] = None
 
@@ -68,7 +58,6 @@ def seasonal_theme():
         return 'autumn'
 
 def random_event(barakoni):
-    # Random event 10% chance
     if random.random() < 0.1:
         event = random.choice(["storm", "visitor", "strangeNoise"])
         if event == "storm":
@@ -82,9 +71,6 @@ def random_event(barakoni):
             flash("A strange noise at night disturbed Barakoni's rest.", 'negative')
 
 def check_evolution(barakoni):
-    # If happiness > 80, increment happy_streak, reset unhappy_streak
-    # If happiness < 30, increment unhappy_streak, reset happy_streak
-    # Else reset both
     if barakoni.happiness > 80:
         barakoni.happy_streak += 1
         barakoni.unhappy_streak = 0
@@ -95,7 +81,6 @@ def check_evolution(barakoni):
         barakoni.happy_streak = 0
         barakoni.unhappy_streak = 0
 
-    # Evolve if 3 days happy streak or unhappy streak
     if barakoni.happy_streak >= 3:
         barakoni.evolution_stage = 2
     if barakoni.unhappy_streak >= 3:
@@ -127,8 +112,6 @@ def index():
     global_state = GlobalState.query.first()
 
     random_event(barakoni)
-    # Removed daily logging and achievements logic
-    
     check_evolution(barakoni)
     db.session.commit()
 
@@ -142,6 +125,18 @@ def index():
                            points=global_state.points,
                            day_or_night=day_or_night,
                            season=season)
+
+@app.route('/tease', methods=['POST'])
+def tease():
+    barakoni = BarakoniState.query.first()
+    if barakoni:
+        barakoni.happiness = max(barakoni.happiness - 10, 0)
+        db.session.commit()
+        flash("You teased Barakoni! He looks annoyed.", 'negative')
+    # If this is an AJAX request, return JSON, else redirect
+    if request.is_json:
+        return jsonify({"status": "ok"})
+    return redirect(url_for('index'))
 
 @app.route('/feed', methods=['POST'])
 def feed():
@@ -171,15 +166,6 @@ def rest():
         flash('Barakoni rested and regained energy!', 'positive')
     return redirect(url_for('index'))
 
-@app.route('/tease', methods=['POST'])
-def tease():
-    barakoni = BarakoniState.query.first()
-    if barakoni:
-        barakoni.happiness = max(barakoni.happiness - 10, 0)
-        db.session.commit()
-        flash("You teased Barakoni! He looks annoyed.", 'negative')
-    return redirect(url_for('index'))
-
 @app.route('/annoy', methods=['POST'])
 def annoy():
     barakoni = BarakoniState.query.first()
@@ -189,8 +175,6 @@ def annoy():
         db.session.commit()
         flash("You really annoyed Barakoni! He glares at you.", 'negative')
     return redirect(url_for('index'))
-
-# Removed /history and /achievements routes as requested
 
 @app.route('/shop', methods=['GET', 'POST'])
 def shop():
@@ -232,7 +216,6 @@ def equip_item():
         flash("You don't own this item!", 'negative')
     return redirect(url_for('shop'))
 
-# Number guessing minigame remains the same, just improved styling via CSS
 @app.route('/minigame')
 def minigame():
     global_state = GlobalState.query.first()
@@ -257,13 +240,13 @@ def minigame_post():
         db.session.commit()
     return redirect(url_for('minigame'))
 
-# DevOps quiz with 15+ questions
 DEVOPS_QUESTIONS = [
     {
         "question": "Which of the following tools is commonly used for container orchestration?",
         "options": ["Git", "Kubernetes", "Jenkins", "Docker"],
         "answer": "Kubernetes"
     },
+    # ... Add all other 15+ questions as before ...
     {
         "question": "CI/CD stands for:",
         "options": ["Continuous Integration/Continuous Delivery", "Concurrent Integration/Constant Deployment", "Continuous Inspection/Continuous Debugging", "Continuous Improvement/Continuous Design"],
@@ -348,7 +331,6 @@ def minigame_quiz():
 
     if request.method == 'POST':
         chosen_answer = request.form.get('answer')
-        # Retrieve last question index from session
         q_index = session.get('quiz_question')
         if q_index is not None:
             question_data = DEVOPS_QUESTIONS[q_index]
@@ -365,7 +347,6 @@ def minigame_quiz():
                 barakoni.happiness = max(barakoni.happiness - 5, 0)
             db.session.commit()
 
-        # After answering, redirect to get a new question
         return redirect(url_for('minigame_quiz'))
 
     # GET request: show a new question
@@ -373,7 +354,7 @@ def minigame_quiz():
     session['quiz_question'] = q_index
     question_data = DEVOPS_QUESTIONS[q_index]
 
-    return render_template('minigame_quiz.html', 
+    return render_template('minigame_quiz.html',
                            points=global_state.points,
                            question=question_data['question'],
                            options=question_data['options'])

@@ -11,12 +11,12 @@
             <p style="color: green; font-weight: bold;">Owned</p>
             <form method="post" action="{{ url_for('equip_item') }}">
                 <input type="hidden" name="item_name" value="{{ item.name }}">
-                <button type="submit" class="action-btn">Toggle Equip</button>
+                <button type="submit" class="action-btn equip-btn">Toggle Equip</button>
             </form>
         {% else %}
             <form method="post">
                 <input type="hidden" name="item_name" value="{{ item.name }}">
-                <button type="submit" class="action-btn">Buy</button>
+                <button type="submit" class="action-btn buy-btn">Buy</button>
             </form>
         {% endif %}
     </div>
